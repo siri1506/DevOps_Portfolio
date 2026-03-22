@@ -1,0 +1,23 @@
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to AWS ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build Docker Image
+        run: docker build -t demo-app .
+
+      - name: Push to ECR
+        run: |
+          docker tag demo-app:latest ${{ secrets.ECR_REPO }}:latest
+          docker push ${{ secrets.ECR_REPO }}:latest
